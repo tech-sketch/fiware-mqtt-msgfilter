@@ -7,29 +7,18 @@ Package main : entry point of fiware-distinct-message
 package main
 
 import (
-	"os"
-	"strconv"
-
+	"github.com/tech-sketch/fiware-mqtt-msgfilter/conf"
 	"github.com/tech-sketch/fiware-mqtt-msgfilter/router"
+	"github.com/tech-sketch/fiware-mqtt-msgfilter/utils"
 )
 
-const listenPort = "LISTEN_PORT"
-const defaultPort = "5001"
-
 func main() {
-	handler := router.NewHandler()
-	handler.Run(getListenPort())
-}
-
-func getListenPort() string {
-	port := os.Getenv(listenPort)
-	if len(port) == 0 {
-		port = defaultPort
+	logger := utils.NewLogger("main")
+	config := conf.NewConfig()
+	handler, err := router.NewHandler(config)
+	if err != nil {
+		logger.Errorf("NewHandler raise error: %s", err)
+		return
 	}
-	intPort, err := strconv.Atoi(port)
-	if err != nil || intPort < 1 || 65535 < intPort {
-		port = defaultPort
-	}
-
-	return ":" + port
+	handler.Run(config.ListenPort)
 }

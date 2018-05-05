@@ -2,6 +2,24 @@
 
 
 [[projects]]
+  name = "github.com/coreos/etcd"
+  packages = [
+    "client",
+    "pkg/pathutil",
+    "pkg/srv",
+    "pkg/types",
+    "version"
+  ]
+  revision = "fdde8705f5bf9a6d9dbfb0220caf2ee1ac816be8"
+  version = "v3.3.4"
+
+[[projects]]
+  name = "github.com/coreos/go-semver"
+  packages = ["semver"]
+  revision = "8ab6407b697782a06568d4b7f1db25550ec2e4c6"
+  version = "v0.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -37,6 +55,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  revision = "640f4622ab692b87c2f3a94265e6f579fe38263d"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "6f686a352de66814cdd080d970febae7767857a3"
@@ -56,6 +80,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1a2b10f3ec80fa4b6ad88156b737403ca45820640ec668e0b797538b6274d305"
+  inputs-digest = "9409b42aed095edc5e9f81beef79ff934721bba58e621779e987803335ff2ca9"
   solver-name = "gps-cdcl"
   solver-version = 1

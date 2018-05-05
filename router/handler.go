@@ -1,5 +1,5 @@
 /*
-Package router : authorize and authenticate HTTP Request using HTTP Header.
+Package router : routing http request and check message duplication using Checker.
 
 	license: Apache license 2.0
 	copyright: Nobuyuki Matsui <nobuyuki.matsui@gmail.com>
@@ -7,13 +7,14 @@ Package router : authorize and authenticate HTTP Request using HTTP Header.
 package router
 
 import (
-	"fmt"
-	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+
+	"github.com/tech-sketch/fiware-mqtt-msgfilter/checker"
+	"github.com/tech-sketch/fiware-mqtt-msgfilter/conf"
+	"github.com/tech-sketch/fiware-mqtt-msgfilter/utils"
 )
 
 /*
@@ -28,10 +29,11 @@ type Handler struct {
 /*
 NewHandler : a factory method to create Handler.
 */
-func NewHandler() *Handler {
+func NewHandler(config *conf.Config) (*Handler, error) {
 	engine := gin.Default()
-	c := &checker{
-		payloads: make(map[string]string),
+	c, err := checker.NewChecker(config)
+	if err != nil {
+		return nil, err
 	}
 
 	engine.POST("/distinct/", func(context *gin.Context) {
@@ -41,7 +43,7 @@ func NewHandler() *Handler {
 	router := &Handler{
 		Engine: engine,
 	}
-	return router
+	return router, nil
 }
 
 /*
@@ -55,41 +57,30 @@ type bodyType struct {
 	Payload string `json:"payload" binding:"required"`
 }
 
-func distinctMessage(context *gin.Context, checker *checker) {
+func distinctMessage(context *gin.Context, checker *checker.Checker) {
+	logger := utils.NewLogger("distinctMessage")
 	var body bodyType
 
 	if err := context.ShouldBindWith(&body, binding.JSON); err != nil {
+		logger.Errorf("validate failed: %s", err.Error())
 		context.JSON(http.StatusBadRequest, gin.H{
 			"result": "failure",
 			"error":  err.Error(),
 		})
 		return
 	}
-	if checker.IsDuplicate(body.Payload) {
-		log.Printf(formatter("distinctMessage", fmt.Sprintf("duplicate payload = %s", body.Payload)))
+	isDup, err := checker.IsDuplicate(body.Payload)
+	if isDup || err != nil {
+		logger.Infof("duplicate payload = %s", body.Payload)
 		context.JSON(http.StatusConflict, gin.H{
 			"result":  "duplicate",
 			"payload": body.Payload,
 		})
 	} else {
-		log.Printf(formatter("distinctMessage", fmt.Sprintf("new payload = %s", body.Payload)))
+		logger.Infof("new payload = %s", body.Payload)
 		context.JSON(http.StatusOK, gin.H{
 			"result":  "success",
 			"payload": body.Payload,
 		})
 	}
-}
-
-type checker struct {
-	payloads map[string]string
-}
-
-func (c *checker) IsDuplicate(payload string) bool {
-	_, exists := c.payloads[payload]
-	c.payloads[payload] = payload
-	return exists
-}
-
-func formatter(group string, msg string) string {
-	return fmt.Sprintf("[APP] %s | [%s] %s", time.Now().Format("2006/01/02 - 15:04:05"), group, msg)
 }
