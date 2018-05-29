@@ -8,6 +8,7 @@ package conf
 
 import (
 	"os"
+	"regexp"
 	"strconv"
 )
 
@@ -16,6 +17,7 @@ const (
 	defaultListenPort   = "5001"
 	etcdEndpoint        = "ETCD_ENDPOINT"
 	defaultEtcdEndpoint = "http://127.0.0.1:2379"
+	etcdEndpointRe      = `http://.+:(\d+)`
 	lockTTL             = "LOCK_TTL"
 	defaultLockTTL      = "10"
 	dataTTL             = "DATA_TTL"
@@ -46,7 +48,13 @@ func NewConfig() *Config {
 	}
 
 	etcdEndpoint := os.Getenv(etcdEndpoint)
-	if len(etcdEndpoint) == 0 {
+	r := regexp.MustCompile(etcdEndpointRe)
+	if !r.MatchString(etcdEndpoint) {
+		etcdEndpoint = defaultEtcdEndpoint
+	}
+	g := r.FindStringSubmatch(etcdEndpoint)
+	ip, err := strconv.Atoi(g[1])
+	if err != nil || ip < 1 || 65535 < ip {
 		etcdEndpoint = defaultEtcdEndpoint
 	}
 
