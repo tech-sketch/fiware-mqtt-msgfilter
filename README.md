@@ -13,7 +13,7 @@ The duplication check flow is like below:
 This REST API accept Environment Variables like below:
 
 |Environment Variable|Summary|Default|
-|:--|:--|
+|:--|:--|:--|
 |`LISTEN_PORT`|listen port of this service|5001|
 |`ETCD_ENDPOINT`|endpoint url of etcd cluster|http://127.0.0.1:2379|
 |`LOCK_TTL`|expire second(s) for lock key|10|
