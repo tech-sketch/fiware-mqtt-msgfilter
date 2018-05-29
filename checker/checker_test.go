@@ -24,10 +24,10 @@ func setUpChecker(t *testing.T) (*mock.MockKeysAPI, func()) {
 	ctrl := gomock.NewController(t)
 	kapi := mock.NewMockKeysAPI(ctrl)
 
-	getNewKeysAPI = func(c client.Client) client.KeysAPI {
+	GetNewKeysAPI = func(c client.Client) client.KeysAPI {
 		return kapi
 	}
-	getMutexID = func(_ string) string {
+	GetMutexID = func(_ string) string {
 		return "mutexID"
 	}
 

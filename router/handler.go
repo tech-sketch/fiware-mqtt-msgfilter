@@ -61,6 +61,17 @@ func distinctMessage(context *gin.Context, checker *checker.Checker) {
 	logger := utils.NewLogger("distinctMessage")
 	var body bodyType
 
+	cType := context.GetHeader("Content-Type")
+
+	if cType != "application/json" {
+		logger.Errorf("header failed: Content-Type=%s", cType)
+		context.JSON(http.StatusBadRequest, gin.H{
+			"result": "failure",
+			"error":  "Content-Type not allowd: " + cType,
+		})
+		return
+	}
+
 	if err := context.ShouldBindWith(&body, binding.JSON); err != nil {
 		logger.Errorf("validate failed: %s", err.Error())
 		context.JSON(http.StatusBadRequest, gin.H{

@@ -28,7 +28,7 @@ func setUpMutex(t *testing.T) (*setUpObj, func()) {
 	ctrl := gomock.NewController(t)
 	kapi := mock.NewMockKeysAPI(ctrl)
 
-	getNewKeysAPI = func(c client.Client) client.KeysAPI {
+	GetNewKeysAPI = func(c client.Client) client.KeysAPI {
 		return kapi
 	}
 

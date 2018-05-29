@@ -26,8 +26,11 @@ const (
 	expireAction = "expire"
 )
 
-var getNewKeysAPI = client.NewKeysAPI
-var getMutexID = func(hostname string) string {
+// GetNewKeysAPI : injection point to mock etcd api
+var GetNewKeysAPI = client.NewKeysAPI
+
+// GetMutexID : injection point to mock mutexId
+var GetMutexID = func(hostname string) string {
 	return fmt.Sprintf("%v-%v-%v", hostname, os.Getpid(), time.Now().Format("20060102-15:04:05.999999999"))
 }
 
@@ -67,9 +70,9 @@ func newMutex(key string, ttl int, c client.Client) (*mutex, error) {
 
 	return &mutex{
 		key:    key,
-		id:     getMutexID(hostname),
+		id:     GetMutexID(hostname),
 		client: c,
-		kapi:   getNewKeysAPI(c),
+		kapi:   GetNewKeysAPI(c),
 		ctx:    context.TODO(),
 		ttl:    time.Second * time.Duration(ttl),
 		mutex:  new(sync.Mutex),
