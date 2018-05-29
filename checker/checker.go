@@ -70,14 +70,21 @@ func (c *Checker) IsDuplicate(message string) (bool, error) {
 	dataKey := fmt.Sprintf("/data/%s", message)
 	logger.Debugf("dataKey = %s", dataKey)
 
-	kapi := client.NewKeysAPI(c.client)
-	_, err = kapi.Get(context.Background(), dataKey, nil)
+	_, err = m.kapi.Get(context.Background(), dataKey, nil)
 	if err != nil {
+		e, ok := err.(client.Error)
+		if !ok {
+			return true, err
+		}
+		if e.Code != client.ErrorCodeKeyNotFound {
+			return true, err
+		}
+
 		setOptions := &client.SetOptions{
 			PrevExist: client.PrevNoExist,
 			TTL:       time.Second * time.Duration(c.config.DataTTL),
 		}
-		_, err = kapi.Set(context.Background(), dataKey, "duplicate", setOptions)
+		_, err = m.kapi.Set(context.Background(), dataKey, "duplicate", setOptions)
 		if err != nil {
 			logger.Errorf("etcd set failed: %s", err.Error())
 			return true, err
