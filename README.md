@@ -19,86 +19,19 @@ This REST API accept Environment Variables like below:
 |`LOCK_TTL`|expire second(s) for lock key|10|
 |`DATA_TTL`|expore second(s) for data|600|
 
-## API specification
+## Request Payload
+`Content-Type: application/json`
 
-* post json
 ```json
 {
   "payload": "message to check duplication"
 }
 ```
 
-* swagger specification
-```yaml
-swagger: "2.0"
-info:
-  title: "fiware-mqtt-msgfilter"
-  version: "0.1.0"
-paths:
-  /distinct/:
-    post:
-      summary: "check duplication"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/payload"
-      responses:
-        200:
-          description: "not duplicate"
-          schema:
-            $ref: "#/definitions/result"
-          examples:
-            success:
-              result: "success"
-              payload: "received message"
-        409:
-          description: "duplicate"
-          schema:
-            $ref: "#/definitions/result"
-          examples:
-            duplicate:
-              result: "duplicate"
-              payload: "received message"
-        400:
-          description: "bad request"
-          schema:
-            $ref: "#/definitions/badRequest"
-          examples:
-            jsonFormatError:
-              result: "failure"
-              error: "Key: 'bodyType.Payload' Error:Field validation for 'Payload' failed on the 'required' tag"
-            headerError:
-              result: "failure"
-              error: "Content-Type not allowd: application/x-www-form-urlencoded"
-definitions:
-  payload:
-    type: "object"
-    properties:
-      payload:
-        type: "string"
-    example:
-      payload: "message to check duplication"
-  result:
-    type: "object"
-    properties:
-      result:
-        type: "string"
-      payload:
-        type: "string"
-  badRequest:
-    type: "object"
-    properties:
-      result:
-        type: "string"
-      error:
-        type: "string"
-```
+## API specification
+
+see [docs/swagger.yaml](/docs/swagger.yaml)
+
 
 ## Run as Docker container
 
