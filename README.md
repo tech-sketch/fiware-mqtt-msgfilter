@@ -1,6 +1,9 @@
 # fiware-mqtt-msgfilter
 This REST API service works with [coreos/etcd](https://coreos.com/etcd/docs/latest/) in order to check the message duplication.
 
+[![TravisCI Status](https://travis-ci.org/tech-sketch/fiware-mqtt-msgfilter.svg?branch=master)](https://travis-ci.org/tech-sketch/fiware-mqtt-msgfilter)
+[![DockerHub Status](https://dockerbuildbadges.quelltext.eu/status.svg?organization=techsketch&repository=fiware-mqtt-msgfilter)](https://hub.docker.com/r/techsketch/fiware-mqtt-msgfilter/builds/)
+
 ## Description
 This REST API service accepts the **POST** request to `/distinct/`.
 
